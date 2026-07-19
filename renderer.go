@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/yuin/goldmark/ast"
@@ -82,7 +83,7 @@ func (r *Renderer) Render(w util.BufWriter, src []byte, node ast.Node, entering 
 }
 
 func (r *Renderer) enter(w util.BufWriter, n *Node, src []byte) (ast.WalkStatus, error) {
-	dest, err := r.Resolver.ResolveWikilink(n)
+	dest, classes, err := r.Resolver.ResolveWikilink(n)
 	if err != nil {
 		return ast.WalkStop, fmt.Errorf("resolve %q: %w", n.Target, err)
 	}
@@ -93,7 +94,13 @@ func (r *Renderer) enter(w util.BufWriter, n *Node, src []byte) (ast.WalkStatus,
 	img := resolveAsImage(n)
 	if !img {
 		r.hasDest.Store(n, struct{}{})
-		_, _ = w.WriteString(`<a href="`)
+		_, _ = w.WriteString(`<a `)
+		if len(classes) > 0 {
+			_, _ = w.WriteString(`class="`)
+			_, _ = w.WriteString(strings.Join(classes, " "))
+			_, _ = w.WriteString(`" `)
+		}
+		_, _ = w.WriteString(`href="`)
 		_, _ = w.Write(util.URLEscape(dest, true /* resolve references */))
 		_, _ = w.WriteString(`">`)
 		return ast.WalkContinue, nil

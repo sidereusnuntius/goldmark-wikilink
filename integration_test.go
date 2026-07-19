@@ -5,9 +5,9 @@ import (
 	"os"
 	"testing"
 
+	wikilink "github.com/sidereusnuntius/goldmark-wikilink"
 	"github.com/stretchr/testify/require"
 	"github.com/yuin/goldmark"
-	"go.abhg.dev/goldmark/wikilink"
 	"gopkg.in/yaml.v3"
 )
 
@@ -49,9 +49,9 @@ var (
 
 type resolver struct{}
 
-func (resolver) ResolveWikilink(n *wikilink.Node) ([]byte, error) {
+func (resolver) ResolveWikilink(n *wikilink.Node) ([]byte, []string, error) {
 	if bytes.Equal(n.Target, _doesNotExistTarget) {
-		return nil, nil
+		return nil, nil, nil
 	}
 
 	return wikilink.DefaultResolver.ResolveWikilink(n)

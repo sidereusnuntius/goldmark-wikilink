@@ -134,12 +134,12 @@ func TestRenderer(t *testing.T) {
 
 		n := &Node{Target: []byte("foo")}
 		r := Renderer{
-			Resolver: resolverFunc(func(n *Node) ([]byte, error) {
+			Resolver: resolverFunc(func(n *Node) ([]byte, []string, error) {
 				assert.False(t, resolved, "resolver invoked too many times")
 				resolved = true
 
 				assert.Equal(t, "foo", string(n.Target), "target mismatch")
-				return []byte("bar.html"), nil
+				return []byte("bar.html"), nil, nil
 			}),
 		}
 
@@ -187,8 +187,8 @@ func TestRenderer_ResolveError(t *testing.T) {
 	t.Parallel()
 
 	r := Renderer{
-		Resolver: resolverFunc(func(*Node) ([]byte, error) {
-			return nil, errors.New("great sadness")
+		Resolver: resolverFunc(func(*Node) ([]byte, []string, error) {
+			return nil, nil, errors.New("great sadness")
 		}),
 	}
 	_, err := r.Render(
@@ -201,6 +201,6 @@ func TestRenderer_ResolveError(t *testing.T) {
 	assert.Contains(t, err.Error(), "great sadness")
 }
 
-func noopResolver(*Node) ([]byte, error) {
-	return nil, nil
+func noopResolver(*Node) ([]byte, []string, error) {
+	return nil, nil, nil
 }

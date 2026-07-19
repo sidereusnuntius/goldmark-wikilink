@@ -1,4 +1,4 @@
-module go.abhg.dev/goldmark/wikilink
+module github.com/sidereusnuntius/goldmark-wikilink
 
 go 1.22
 

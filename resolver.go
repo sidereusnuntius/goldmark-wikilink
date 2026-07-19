@@ -29,14 +29,14 @@ type Resolver interface {
 	// If ResolveWikilink returns a nil destination and error, the
 	// Renderer will omit the link and render its contents as a regular
 	// string.
-	ResolveWikilink(*Node) (destination []byte, err error)
+	ResolveWikilink(*Node) (destination []byte, classes []string, err error)
 }
 
 var _html = []byte(".html")
 
 type defaultResolver struct{}
 
-func (defaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
+func (defaultResolver) ResolveWikilink(n *Node) ([]byte, []string, error) {
 	dest := make([]byte, len(n.Target)+len(_html)+len(_hash)+len(n.Fragment))
 	var i int
 	if len(n.Target) > 0 {
@@ -49,5 +49,5 @@ func (defaultResolver) ResolveWikilink(n *Node) ([]byte, error) {
 		i += copy(dest[i:], _hash)
 		i += copy(dest[i:], n.Fragment)
 	}
-	return dest[:i], nil
+	return dest[:i], nil, nil
 }

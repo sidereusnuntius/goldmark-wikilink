@@ -8,9 +8,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type resolverFunc func(*Node) ([]byte, error)
+type resolverFunc func(*Node) ([]byte, []string, error)
 
-func (f resolverFunc) ResolveWikilink(n *Node) ([]byte, error) {
+func (f resolverFunc) ResolveWikilink(n *Node) ([]byte, []string, error) {
 	return f(n)
 }
 
@@ -64,7 +64,7 @@ func TestDefaultResolver(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := DefaultResolver.ResolveWikilink(&Node{
+			got, _, err := DefaultResolver.ResolveWikilink(&Node{
 				Target:   []byte(tt.target),
 				Fragment: []byte(tt.fragment),
 			})
